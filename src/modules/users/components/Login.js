@@ -14,7 +14,7 @@ function LoginForm() {
     event.preventDefault();
     logInWithEmailAndPassword(email, password, () => {
       dispatch(logged(true));
-      navigate("/articles");
+      navigate("/items");
     });
   };
 
@@ -48,8 +48,10 @@ function LoginForm() {
           Login
         </button>
         <div className="mb-3 d-flex justify-content-center">
-        <div>Don't you have an account?</div>
-        <Link to="/register"><a className="login-register-label">Register</a></Link>
+          <div>Don't you have an account?</div>
+          <Link to="/register">
+            <a className="login-register-label">Register</a>
+          </Link>
         </div>
       </form>
     </div>

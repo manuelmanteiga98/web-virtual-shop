@@ -4,12 +4,12 @@ import "./index.css";
 import App from "./modules/app";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import articlesReducer from "./store/articlesSlice";
+import itemsReducer from "./store/itemsSlice";
 import authReducer from "./store/authSlice";
 
 var store = configureStore({
   reducer: {
-    articles: articlesReducer,
+    items: itemsReducer,
     auth: authReducer,
   },
 });

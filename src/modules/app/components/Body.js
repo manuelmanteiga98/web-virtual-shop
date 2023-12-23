@@ -14,8 +14,8 @@ const Body = () => {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      {logged && <Route path="/articles" element={<InventoryList />} />}
-      {logged && <Route path="/articles/:itemID" element={<ItemDetails />} />}
+      {logged && <Route path="/items" element={<InventoryList />} />}
+      {logged && <Route path="/items/:itemID" element={<ItemDetails />} />}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

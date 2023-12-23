@@ -1,28 +1,24 @@
 import React from "react";
 import Listitem from "./ListItem";
 import { useDispatch, useSelector } from "react-redux";
-import { isEmptyList, selectFilteredArticles } from "../selectors";
-import { getArticles as getArticlesBackend } from "../../backend/firestore";
-import { addArticles } from "../../../store/articlesSlice";
+import { isEmptyList, selectFilteredItems } from "../selectors";
+import { getItems as getItemsBackend } from "../../backend/firestore";
+import { addItems } from "../../../store/itemsSlice";
 
 function InventoryList() {
   const empty = useSelector(isEmptyList);
-  const filteredList = useSelector(selectFilteredArticles);
+  const filteredList = useSelector(selectFilteredItems);
   const dispatch = useDispatch();
 
   if (empty) {
-    getArticlesBackend((items) => dispatch(addArticles(items)));
+    getItemsBackend((items) => dispatch(addItems(items)));
     return <p>No items to display</p>;
   }
 
   return (
-    <div class="container d-grid item-list">
+    <div class="container d-flex item-list">
       {filteredList.map((element) => (
-        <Listitem
-          itemKey={element.id}
-          content={element.name}
-          units={element.units}
-        />
+        <Listitem item={element} />
       ))}
     </div>
   );

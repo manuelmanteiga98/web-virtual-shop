@@ -23,13 +23,13 @@ const Register = () => {
   const onPasswordChange = (e) => {
     setPassword(e.target.value);
     setPasswordError(!(e.target.value === rpassword));
-    setValidPassword((e.target.value.length >= 0) && (e.target.value === password));
+    setValidPassword(e.target.value.length >= 0 && e.target.value === password);
   };
 
   const onRpasswordChange = (e) => {
     setRpassword(e.target.value);
     setPasswordError(!(e.target.value === password));
-    setValidPassword((e.target.value.length >= 0) && (e.target.value === password));
+    setValidPassword(e.target.value.length >= 0 && e.target.value === password);
   };
 
   const validateEmail = (address) => {
@@ -39,10 +39,11 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!emailError) register(email, password, () => {
-      dispatch(logged(true));
-      navigate("/articles");
-    });
+    if (!emailError)
+      register(email, password, () => {
+        dispatch(logged(true));
+        navigate("/items");
+      });
   };
 
   return (
@@ -69,7 +70,9 @@ const Register = () => {
             Password
           </label>
           <input
-            className={`form-control ${passwordError ? "is-invalid" : ""} ${validPassword ? "is-valid" : ""}`}
+            className={`form-control ${passwordError ? "is-invalid" : ""} ${
+              validPassword ? "is-valid" : ""
+            }`}
             value={password}
             onChange={onPasswordChange}
             type="password"
@@ -82,7 +85,9 @@ const Register = () => {
             Repeat Password
           </label>
           <input
-            className={`form-control ${passwordError ? "is-invalid" : ""} ${validPassword ? "is-valid" : ""}`}
+            className={`form-control ${passwordError ? "is-invalid" : ""} ${
+              validPassword ? "is-valid" : ""
+            }`}
             value={rpassword}
             onChange={onRpasswordChange}
             type="password"

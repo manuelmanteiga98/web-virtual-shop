@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { logout } from "../../../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { isLogged } from "../selectors";
-import { toFiltered } from "../../../store/articlesSlice";
+import { toFiltered } from "../../../store/itemsSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -19,20 +19,9 @@ const Header = () => {
         <a class="navbar-brand" href="/">
           Market App
         </a>
-        {logged && (<button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>)}
 
         {logged && (
-          <div class="input-group rounded">
+          <div class="input-group rounded w-50 search-items-bar">
             <input
               type="search"
               class="form-control rounded"
@@ -51,7 +40,7 @@ const Header = () => {
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto">
               <li class="nav-item">
-                <Link to="/articles">
+                <Link to="/items">
                   <a class="nav-link">Inventory</a>
                 </Link>
               </li>
@@ -65,7 +54,7 @@ const Header = () => {
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  Dropdown button
+                  Sections
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <li>
@@ -95,6 +84,19 @@ const Header = () => {
               </li>
             </ul>
           </div>
+        )}
+        {logged && (
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
         )}
       </div>
     </nav>

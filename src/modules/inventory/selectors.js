@@ -1,5 +1,5 @@
-const selectFilteredArticles = (store) => store.articles["filteredList"];
+const selectFilteredItems = (store) => store.items["filteredList"];
 const isEmptyList = (store) =>
-  !Array.isArray(store.articles["list"]) || store.articles["list"].length === 0;
-const getList = (store) => store.articles["list"];
-export { selectFilteredArticles, isEmptyList, getList };
+  !Array.isArray(store.items["list"]) || store.items["list"].length === 0;
+const getList = (store) => store.items["list"];
+export { selectFilteredItems, isEmptyList, getList };
