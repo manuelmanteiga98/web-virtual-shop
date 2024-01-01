@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import DeleteItemModal from "./DeleteItemModal";
 
 function Listitem(props) {
-  const { id, name, units, imageURL } = props.item;
+  const { id, name, units, imageURL } = props;
 
   return (
     <div class="card">
@@ -21,7 +22,7 @@ function Listitem(props) {
           <Link to={`/items/${id}`}>
             <a class="btn btn-primary">Show</a>
           </Link>
-          <a class="btn btn-danger">Delete</a>
+          <DeleteItemModal id={id} name={`${name}`} />
         </div>
       </div>
     </div>

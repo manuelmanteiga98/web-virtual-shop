@@ -6,6 +6,8 @@ import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { isLogged } from "../selectors";
 import { InventoryList, ItemDetails } from "../../inventory";
+import { SalesList } from "../../sales";
+import { OrdersList } from "../orders";
 
 const Body = () => {
   const logged = useSelector(isLogged);
@@ -15,6 +17,8 @@ const Body = () => {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
       {logged && <Route path="/items" element={<InventoryList />} />}
+      {logged && <Route path="/sales" element={<SalesList />} />}
+      {logged && <Route path="/orders" element={<OrdersList />} />}
       {logged && <Route path="/items/:itemID" element={<ItemDetails />} />}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

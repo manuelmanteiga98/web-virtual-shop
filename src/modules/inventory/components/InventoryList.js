@@ -2,8 +2,9 @@ import React from "react";
 import Listitem from "./ListItem";
 import { useDispatch, useSelector } from "react-redux";
 import { isEmptyList, selectFilteredItems } from "../selectors";
-import { getItems as getItemsBackend } from "../../backend/firestore";
-import { addItems } from "../../../store/itemsSlice";
+import { getItemsFromFirestore } from "../../backend/itemsBackend";
+import { addCategory, addItem } from "../../../store/itemsSlice";
+import InventoryListBar from "./AddItemModal";
 
 function InventoryList() {
   const empty = useSelector(isEmptyList);
@@ -11,15 +12,31 @@ function InventoryList() {
   const dispatch = useDispatch();
 
   if (empty) {
-    getItemsBackend((items) => dispatch(addItems(items)));
-    return <p>No items to display</p>;
+    getItemsFromFirestore(
+      (item) => dispatch(addItem(item)),
+      (category) => dispatch(addCategory(category))
+    );
+    return (
+      <div>
+        <InventoryListBar />
+        <div className="items-no-items">No items to display</div>
+      </div>
+    );
   }
 
   return (
-    <div class="container d-flex item-list">
-      {filteredList.map((element) => (
-        <Listitem item={element} />
-      ))}
+    <div>
+      <InventoryListBar />
+      <div class="container d-flex item-list">
+        {filteredList.map((item) => (
+          <Listitem
+            id={item.id}
+            name={item.name}
+            units={item.units}
+            imageURL={item.imageURL}
+          />
+        ))}
+      </div>
     </div>
   );
 }

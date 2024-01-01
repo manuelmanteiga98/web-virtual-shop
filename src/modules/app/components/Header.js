@@ -1,39 +1,75 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { logout } from "../../../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { isLogged } from "../selectors";
-import { toFiltered } from "../../../store/itemsSlice";
+import { isLogged, getCategories } from "../selectors";
+import { toFiltered, toFilteredByCategory } from "../../../store/itemsSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
+  const currentPath = useLocation().pathname;
+
+  // States
+  const [filteringText, setFilteringText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("-");
+
+  // Selections
+  const categories = useSelector(getCategories);
   const logged = useSelector(isLogged);
+
+  // Handlers
   const onLogoutClick = () => dispatch(logout());
   const filterList = (e) => {
+    setFilteringText(e.target.value);
     dispatch(toFiltered(e.target.value));
+  };
+  const onCategoryChangeHandler = (e) => {
+    const category = e.target.value === "-" ? "" : e.target.value;
+    setSelectedCategory(category);
+    dispatch(
+      toFilteredByCategory({
+        category: category,
+        text: filteringText,
+      })
+    );
   };
 
   return (
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light header-navbar">
+      <div class="container mw-100">
         <a class="navbar-brand" href="/">
           Market App
         </a>
 
-        {logged && (
-          <div class="input-group rounded w-50 search-items-bar">
+        {logged && currentPath === "/items" && (
+          <div className="input-group rounded header-search-items">
             <input
               type="search"
               class="form-control rounded"
               placeholder="Search"
               aria-label="Search"
               aria-describedby="search-addon"
+              value={filteringText}
               onChange={filterList}
             />
             <span class="input-group-text border-0" id="search-addon">
               <i class="fas fa-search"></i>
             </span>
           </div>
+        )}
+
+        {logged && currentPath === "/items" && categories.length > 0 && (
+          <select
+            className="form-select header-category-selector"
+            name="categories"
+            id="categories"
+            onChange={onCategoryChangeHandler}
+            value={selectedCategory}
+          >
+            {categories.map((e) => (
+              <option value={e}>{e}</option>
+            ))}
+          </select>
         )}
 
         {logged && (
@@ -57,20 +93,15 @@ const Header = () => {
                   Sections
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      Link 1
-                    </a>
+                  <li class="nav-item">
+                    <Link to="/sales">
+                      <a class="nav-link">Sales</a>
+                    </Link>
                   </li>
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      Link 2
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      Link 3
-                    </a>
+                  <li class="nav-item">
+                    <Link to="/orders">
+                      <a class="nav-link">Orders</a>
+                    </Link>
                   </li>
                 </ul>
               </li>

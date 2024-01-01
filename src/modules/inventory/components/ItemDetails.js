@@ -7,9 +7,16 @@ const ItemDetails = () => {
   const { itemID } = useParams();
   const list = useSelector(getList);
   const item = list.find((item) => item.id === itemID);
+  if (!item) return <div>Error</div>;
   return (
     <div className="item-details-all">
-      <img className="item-details-photo" src={item.imageURL} />
+      <img
+        className="item-details-photo"
+        src={
+          item.imageURL ||
+          "https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/512x512/plain/object_cube.png"
+        }
+      />
       <div>
         <div className="item-details-main">
           <div className="d-flex align-items-center">
