@@ -1,6 +1,11 @@
 import { auth, db, storage } from "../../config/firebaseConfig";
-import { ref, getDownloadURL } from "firebase/storage";
-import { collection, addDoc } from "firebase/firestore";
+import {
+  ref,
+  getDownloadURL,
+  uploadBytes,
+  deleteObject,
+} from "firebase/storage";
+import { doc, setDoc } from "firebase/firestore";
 
 let wasExecuted = false;
 
@@ -18,24 +23,31 @@ const getItemsFromFirestore = async (itemCallback, categoryCallback) => {
       .collection("items")
       .get();
     snapshot.forEach(async (item) => {
-      const imageRef = ref(storage, `${email}/items/${item.id}`);
       try {
+        categoryCallback(item.get("category"));
+        const imageRef = ref(storage, `${email}/items/${item.id}`);
         const itemImage = await getDownloadURL(imageRef);
-        let category = item.get("category");
-        categoryCallback(category);
         itemCallback({
           id: item.id,
           name: item.get("name"),
           units: item.get("units"),
           imageURL: itemImage,
-          category: category,
+          category: item.get("category"),
           cost: item.get("cost"),
           price: item.get("price"),
           units_limit: item.get("units_limit"),
         });
       } catch (imageError) {
-        // Handle error when fetching image
-        console.error("Error fetching image:", imageError);
+        itemCallback({
+          id: item.id,
+          name: item.get("name"),
+          units: item.get("units"),
+          imageURL: null,
+          category: item.get("category"),
+          cost: item.get("cost"),
+          price: item.get("price"),
+          units_limit: item.get("units_limit"),
+        });
       }
     });
   } catch (error) {
@@ -45,6 +57,7 @@ const getItemsFromFirestore = async (itemCallback, categoryCallback) => {
 };
 
 const addItem = async (
+  itemID,
   itemName,
   category,
   price,
@@ -55,6 +68,7 @@ const addItem = async (
   callback
 ) => {
   if (
+    itemID === null ||
     itemName === null ||
     itemName.length === 0 ||
     category === null ||
@@ -65,28 +79,41 @@ const addItem = async (
   )
     return;
 
-  const item = {
-    name: itemName,
-    units: units,
-    category: category,
-    cost: cost,
-    price: price,
-    units_limit: unitsLimit,
-  };
+  const item = Object.create(null);
+  item.name = itemName;
+  item.units = units;
+  item.category = category;
+  item.cost = cost;
+  item.price = price;
+  item.units_limit = unitsLimit;
 
   try {
     const email = auth.currentUser?.email;
     if (email) {
-      const docRef = await addDoc(collection(db, `users/${email}/items`), item)
-        .then(async (itemFirestore) => {
+      await setDoc(doc(db, `users/${email}/items`, itemID), item)
+        .then(async () => {
+          item.id = itemID;
           if (image !== null) {
-            console.log(`images/${itemFirestore.id}.jpeg`);
-            const storageRef = storage.ref(`images/${itemFirestore.id}.jpeg`);
-            const snapshot = await storageRef.put(image);
-            item["imageURL"] = await snapshot.ref.getDownloadURL();
-          } else item["imageURL"] = null;
-          item["id"] = itemFirestore.id;
-          callback(item);
+            const storageRef = ref(storage, `${email}/items/${itemID}`);
+
+            const uploadTask = uploadBytes(storageRef, image);
+            uploadTask
+              .then(() => {
+                getDownloadURL(storageRef).then((downloadURL) => {
+                  console.log("File available at", downloadURL);
+                  item.imageURL = downloadURL;
+                  callback(item);
+                });
+              })
+              .catch((error) => {
+                console.error("Error uploading file", error);
+                item.imageURL = null;
+                callback(item);
+              });
+          } else {
+            item.imageURL = null;
+            callback(item);
+          }
         })
         .catch(() => alert("There was an error. Item wasnt added."));
     } else alert("Auth error. Item wasnt added.");
@@ -103,7 +130,11 @@ const deleteItem = async (itemID, callback, errorCallback) => {
       .collection("items")
       .doc(itemID)
       .delete()
-      .then(callback)
+      .then(() => {
+        const storageRef = ref(storage, `${email}/items/${itemID}`);
+        deleteObject(storageRef);
+        callback();
+      })
       .catch(errorCallback);
   } else {
     alert(errorCallback);

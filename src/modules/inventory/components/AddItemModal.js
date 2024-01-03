@@ -5,6 +5,7 @@ import { addItem as addItemBackend } from "../../backend/itemsBackend";
 import { addItem } from "../../../store/itemsSlice";
 
 const InventoryListBar = () => {
+  const [itemID, setItemID] = useState(null);
   const [itemName, setItemName] = useState("");
   const [itemCost, setItemCost] = useState(0);
   const [itemPrice, setItemPrice] = useState(0);
@@ -24,6 +25,7 @@ const InventoryListBar = () => {
 
   const handleSubmit = () => {
     addItemBackend(
+      itemID,
       itemName,
       itemCategory,
       itemCost,
@@ -37,6 +39,15 @@ const InventoryListBar = () => {
 
   const addItemModalBody = (
     <div class="modal-body">
+      ID:
+      <input
+        required
+        className="w-100 m-2"
+        placeholder="ID"
+        value={itemID}
+        onChange={(e) => setItemID(e.target.value)}
+      ></input>
+      Name:
       <input
         required
         className="w-100 m-2"
